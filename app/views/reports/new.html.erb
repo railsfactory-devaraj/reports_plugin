@@ -1,0 +1,155 @@
+<h2>Reports</h2>
+<%= form_tag '/get-report', :format => :xlsx, :method => 'get', class: "generate-report" do %>
+
+<div class="box hide-when-print">
+	<fieldset class="tabular">
+		<legend>Client Selection</legend>
+		<div>
+			<p>
+				<label class"required">Client Name<span class="required"> *</span></label>
+				<%= select_tag('client',options_for_select(Project.visible.clients.order(name: 'asc').collect{ |u| ["#{u.name} (#{u.client})", u.id] }), {:prompt => "--select client--"}) %>
+			</p>
+		</div>
+	</fieldset>
+	<%if !params[:project_id].blank?%>
+		<%= hidden_field_tag 'project_id',params[:project_id] %>
+	<% end %>
+	<fieldset class="tabular">
+		<legend>Project Selection</legend>
+		<div>
+			<p>
+				<label>Project Status<span class="required"> *</span></label>
+				<span class="radio">
+					<%= radio_button_tag :project_status, '0',false, class: "project_status"  %> <span>All</span>
+					<%= radio_button_tag :project_status, '1',true, class: "project_status" %><span>Open</span>
+					<%= radio_button_tag :project_status, '5',false, class: "project_status"  %><span>Closed</span>
+				</span>
+			</p>
+			<p>
+				<label>Project Name<span class="required"> *</span></label>
+				<%= select_tag('project',options_for_select([]), {:prompt => "--select project--"}) %>
+			</p>
+		</div>
+	</fieldset>
+
+	<fieldset class="tabular">
+		<legend>Issues Selection</legend>
+		<div>
+			<p>
+				<label>Issues Status<span class="required"> *</span></label>
+				<span class="radio">
+					<%= radio_button_tag :issue_status, '0',false %> <span>All</span>
+					<% IssueStatus.all.each do |issue| %>
+						<% if issue.name.downcase != 'all' %>
+							<%= radio_button_tag 'issue_status', issue.id, issue.id == 1 ? 'checked: true' : nil %> <span><%= issue.name %></span>
+						<% end %>
+					<% end %>
+				</span>
+			</p>
+			<p>
+				<label>Reviewed<span class="required"> *</span></label>
+				<span class="checkbox">
+					<%= check_box_tag 'reviewed',true, class: "project_status"  %>
+				</span>
+			</p>
+		</div>
+	</fieldset>
+
+	<fieldset class="tabular">
+		<legend>Summary Data Selection</legend>
+		<div>
+			<p>
+				<label>Start Date<span class="required"> *</span></label>
+				<%= text_field_tag 'start_date' %>
+				<span class="end_date"><b>End Date<span class="required"> *</span></b></span>
+				<%= text_field_tag 'end_date' %>
+			</p>
+		</div>
+	</fieldset>
+
+	<fieldset class="tabular">
+		<legend>User Selection</legend>
+		<div>
+			<p>
+				<label>Assigned User<span class="required"> *</span></label>
+				<%= select_tag('user',options_for_select([]), {:prompt => "--select user--"}) %>
+			</p>
+		</div>
+	</fieldset>
+
+	<fieldset class="tabular">
+		<legend>Category Selection</legend>
+		<div>
+			<p>
+				<label>Category<span class="required"> *</span></label>
+				<%= select_tag('category',options_for_select([]), {:prompt => "--select category--"}) %>
+			</p>
+		</div>
+	</fieldset>
+
+</div>
+
+<div class="buttons">
+	<input type="submit" value="Generate" name="commit" id="submit">
+	<a href="/">Cancel</a>
+</div>
+<% end %>
+<script type="text/javascript">
+	$( function() {
+	  $( "#start_date, #end_date" ).datepicker({
+	   showOn: "button",
+	   dateFormat: 'yy-mm-dd',
+	   buttonImage: "/images/calendar.png",
+	   buttonImageOnly: true,
+	   changeYear: true,
+	   changeMonth: true,
+	   buttonText: "Select date"
+	  });
+	  $("#end_date" ).datepicker().datepicker("setDate", new Date());
+	  if ($('#flash_alert').length ==1){
+	  	$('#flash_alert').removeClass('alert').addClass('error');
+	  	$('#flash_alert').fadeOut(3000);
+	  };
+	} );
+	$('#project').click(function(){
+		if ($('#client').val() == '') {
+			alert('please select client');
+		}else{
+			if ($(this).val() != '') {
+				var project_id = $(this).val();
+				$.ajax({
+					url: '/get-users/'+project_id,
+					type: 'post'
+				})
+				$('#user').find('option:not(:first)').remove();
+				$('#category').find('option:not(:first)').remove();
+			}
+		};
+	});
+	$('.project_status').click(function(){
+		if ($('#client').val() == '') {
+			alert('please select client');
+		}else{
+			var client_id = $('#client').val();
+			var data = 'project_status='+$(this).val();
+			$.ajax({
+				url: '/get-projects/'+client_id,
+				type: 'post',
+				data: data,
+			})
+		};
+	});
+
+	$('#client').click(function(){
+		if ($(this).val() != '') {
+			var client_id = $(this).val();
+			var data = 'project_status='+$(".project_status:checked").val();
+			$.ajax({
+				url: '/get-projects/'+client_id,
+				type: 'post',
+				data: data
+			})
+			$('#project').find('option:not(:first)').remove();
+		}
+	});
+</script>

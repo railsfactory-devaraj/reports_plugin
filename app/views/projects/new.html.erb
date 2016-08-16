@@ -1,0 +1,11 @@
+<% if params[:parent_id].blank? %>
+	<%= title l(:label_project_new) %>
+<% else %>
+	<%= title 'New Project' %>
+<% end %>
+
+<%= labelled_form_for @project do |f| %>
+<%= render :partial => 'form', :locals => { :f => f } %>
+<%= submit_tag l(:button_create) %>
+<%= submit_tag l(:button_create_and_continue), :name => 'continue' %>
+<% end %>

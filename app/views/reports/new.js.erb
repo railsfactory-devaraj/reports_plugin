@@ -1,0 +1,30 @@
+<% if @projects.present? %>
+	$('#project').find('option:not(:first)').remove();
+	var projects = <%= Hash[*@projects.flatten].to_json.html_safe %>
+	$.each(projects, function(key, value) {
+	    $('#project').append($("<option/>", {
+	        value: value,
+	        text: key
+	    }));
+	});
+<% end %>
+<% if @users.present? %>
+	$('#user').find('option:not(:first)').remove();
+	var users = <%= Hash[*@users.uniq.flatten].to_json.html_safe %>
+	$.each(users, function(key, value) {
+	    $('#user').append($("<option/>", {
+	        value: value,
+	        text: key
+	    }));
+	});
+<% end %>
+<% if @categories.present? %>
+	$('#category').find('option:not(:first)').remove();
+	var users = <%= Hash[*@categories.flatten].to_json.html_safe %>
+	$.each(users, function(key, value) {
+	    $('#category').append($("<option/>", {
+	        value: value,
+	        text: key
+	    }));
+	});
+<% end %>

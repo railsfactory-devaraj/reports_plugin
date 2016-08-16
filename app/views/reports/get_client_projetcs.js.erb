@@ -1,0 +1,10 @@
+<% if @projects.present? %>
+	$('#client_project').find('option:not(:first)').remove();
+	var projects = <%= Hash[*@projects.flatten].to_json.html_safe %>
+	$.each(projects, function(key, value) {
+	    $('#client_project').append($("<option/>", {
+	        value: value,
+	        text: key
+	    }));
+	});
+<% end %>

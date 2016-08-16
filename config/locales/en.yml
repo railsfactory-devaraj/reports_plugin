@@ -1,0 +1,7 @@
+# English strings go here for Rails i18n
+en:
+  # my_label: "My label"
+  label_project_new: New Client
+  label_subproject_new: New Project
+  label_project_plural: Clients
+  label_subproject_plural: Projects
