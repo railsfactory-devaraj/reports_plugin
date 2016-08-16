@@ -105,10 +105,10 @@ module Reports
 			  end
 			  def save_attributes
 			  	if self.parent_id.nil?
-			  			self.update_columns(client: self.identifier.gsub(/[-_]/,'')[0,8].strip, sub_project_count: 0)
+			  			self.update_columns(client: self.name[0,5].strip, sub_project_count: 0)
  			      else
  			      	self.root.update_columns(sub_project_count: self.root.sub_project_count.nil? ? 1 : self.root.sub_project_count+1)
- 			      	self.update_columns(client_id: self.root.identifier.gsub(/[-_]/,'')[0,8].strip+'.'+Date.today.strftime('%y')+(sprintf '%05d', self.root.sub_project_count))
+ 			      	self.update_columns(client_id: self.root.name[0,5].strip+'.'+Date.today.strftime('%y')+(sprintf '%05d', self.root.sub_project_count))
  			    end
 			  end
 	    end
